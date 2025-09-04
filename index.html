@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Search Box</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f0f0f;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .box {
+      background: #1a1a1a;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      width: 400px;
+      text-align: center;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 15px;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: red;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: darkred;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>YouTube Search</h2>
+    <form id="ytForm" action="https://formspree.io/f/xzzakrnn" method="POST">
+      <input type="text" id="query" name="query" placeholder="Search YouTube..." required>
+      <button type="submit">Search</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("ytForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      let query = document.getElementById("query").value;
+      
+      // Send to Formspree
+      fetch(this.action, {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: query })
+      });
+
+      // Redirect to YouTube search
+      window.location.href = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query);
+    });
+  </script>
+</body>
+</html>
