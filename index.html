@@ -3,76 +3,122 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YouTube Search Box</title>
+  <title>YouTube Search with Tracking</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #0f0f0f;
+      background: #121212;
       color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .box {
-      background: #1a1a1a;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-      width: 400px;
+      margin: 0;
+      padding: 20px;
       text-align: center;
     }
     input[type="text"] {
-      width: 100%;
-      padding: 10px;
+      width: 60%;
+      padding: 12px;
       border-radius: 8px;
       border: none;
+      font-size: 16px;
       margin-bottom: 15px;
     }
     button {
-      padding: 10px 20px;
+      padding: 12px 20px;
       border: none;
       border-radius: 8px;
       background: red;
       color: white;
+      font-size: 16px;
       font-weight: bold;
       cursor: pointer;
     }
     button:hover {
       background: darkred;
     }
+    .results {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .video {
+      background: #1e1e1e;
+      border-radius: 8px;
+      margin: 10px;
+      padding: 10px;
+      width: 250px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .video:hover {
+      transform: scale(1.05);
+    }
+    .video img {
+      width: 100%;
+      border-radius: 6px;
+    }
+    .video-title {
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h2>YouTube Search</h2>
-    <form id="ytForm" action="https://formspree.io/f/xzzakrnn>
-      <input type="text" id="query" name="query" placeholder="Search YouTube..." required>
-      <button type="submit">Search</button>
-    </form>
-  </div>
+  <h1>YouTube Search</h1>
+  <input type="text" id="searchQuery" placeholder="Search YouTube...">
+  <button onclick="searchYouTube()">Search</button>
+
+  <div class="results" id="results"></div>
 
   <script>
-    document.getElementById("ytForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      let query = document.getElementById("query").value;
-      let ytLink = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query);
+    const apiKey = "AIzaSyBVA1YfbZQ-d2xYyhRPi0eEOMNu5dIi62k"; // 👈 replace with your API key
+    const formspreeUrl = "https://formspree.io/f/xzzakrnn"; // 👈 replace with your Formspree endpoint
 
-      // Send query + link to Formspree
-      fetch(this.action, {
+    async function searchYouTube() {
+      const query = document.getElementById("searchQuery").value;
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=6&key=${apiKey}`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "";
+
+      data.items.forEach(video => {
+        const videoId = video.id.videoId;
+        const title = video.snippet.title;
+        const thumbnail = video.snippet.thumbnails.medium.url;
+
+        const videoDiv = document.createElement("div");
+        videoDiv.className = "video";
+        videoDiv.innerHTML = `
+          <img src="${thumbnail}" alt="${title}">
+          <div class="video-title">${title}</div>
+        `;
+
+        videoDiv.onclick = () => handleVideoClick(videoId, title);
+        resultsDiv.appendChild(videoDiv);
+      });
+    }
+
+    function handleVideoClick(videoId, title) {
+      // Send data to Formspree
+      fetch(formspreeUrl, {
         method: "POST",
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          query: query,
-          youtube_link: ytLink
+          videoId: videoId,
+          title: title,
+          youtubeLink: `https://www.youtube.com/watch?v=${videoId}`
         })
       });
 
-      // Redirect to YouTube search
-      window.location.href = ytLink;
-    });
+      // Redirect to YouTube
+      window.location.href = `https://www.youtube.com/watch?v=${videoId}`;
+    }
   </script>
 </body>
 </html>
 
-    
