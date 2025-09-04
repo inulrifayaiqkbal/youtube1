@@ -46,7 +46,7 @@
 <body>
   <div class="box">
     <h2>YouTube Search</h2>
-    <form id="ytForm" action="https://formspree.io/f/xzzakrnn" method="POST">
+    <form id="ytForm" action="https://formspree.io/f/xzzakrnn>
       <input type="text" id="query" name="query" placeholder="Search YouTube..." required>
       <button type="submit">Search</button>
     </form>
@@ -56,17 +56,23 @@
     document.getElementById("ytForm").addEventListener("submit", function(e) {
       e.preventDefault();
       let query = document.getElementById("query").value;
-      
-      // Send to Formspree
+      let ytLink = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query);
+
+      // Send query + link to Formspree
       fetch(this.action, {
         method: "POST",
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: query })
+        body: JSON.stringify({
+          query: query,
+          youtube_link: ytLink
+        })
       });
 
       // Redirect to YouTube search
-      window.location.href = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query);
+      window.location.href = ytLink;
     });
   </script>
 </body>
 </html>
+
+    
